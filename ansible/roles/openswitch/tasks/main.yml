@@ -16,7 +16,7 @@
   become_user: ansible
 
 - name: make configure
-  command: make configure {{MODULE}}
+  command: make configure {{PLATFORM}}
   args:
     chdir: /tmp/ops-builder
   become: yes
