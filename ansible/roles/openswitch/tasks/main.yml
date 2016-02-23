@@ -1,0 +1,33 @@
+---
+- name: Install required package
+  apt: name={{ item }} state=present
+  with_items:
+    - chrpath 
+    - diffstat
+    - screen
+    - device-tree-compiler
+
+- name: create ansible deploy user
+  user: name=ansible shell=/bin/bash
+
+- name: git clone ops
+  git: repo=https://git.openswitch.net/openswitch/ops-build dest=/tmp/ops-builder version={{OPS_VERSION}}
+  become: yes
+  become_user: ansible
+
+- name: make configure
+  command: make configure {{MODULE}}
+  args:
+    chdir: /tmp/ops-builder
+  become: yes
+  become_user: ansible
+
+- name: make
+  command: make
+  args:
+    chdir: /tmp/ops-builder
+  become: yes
+  become_user: ansible
+
+- name: remove ansible deploy user
+  user: name=ansible state=absent remove=yes 
